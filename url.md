@@ -14,3 +14,5 @@ webpack
 
 5. react入门推荐github
     https://github.com/carlleton/reactjs101
+
+6. typora是一款实用易操作的编辑软件(readme)

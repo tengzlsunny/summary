@@ -5,7 +5,7 @@ import os
 index = 'index.html'
 static = 'static'
 PATH = 'G:/tzl/project/2018/ft-manage/ftoul-manage/dist/'  # 需要移动的文件或文件夹地址
-TARGET = 'G:/tzl/project/2018/ft-manage/java/app/src/main/assets/widget/'  # 移动到的地方
+TARGET = 'G:/tzl/project/2018/ft-manage/new_ftoul/app/src/main/assets/widget/'  # 移动到的地方
 
 # 移动文件
 # source 是文件或文件名称，与PATH配合确定路径

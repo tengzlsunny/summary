@@ -19,4 +19,8 @@ webpack
 
 7. https://github.com/Binaryify/NeteaseCloudMusicApi（类似于网易云接口的git地址）
 
-7. pxCook（尺寸测量）
+8. pxCook（尺寸测量）
+
+9. gitExtensions
+
+10. fis3

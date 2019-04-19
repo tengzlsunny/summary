@@ -24,3 +24,8 @@ webpack
 9. gitExtensions
 
 10. fis3
+
+11. https://juejin.im/post/5b9b5a6f6fb9a05d22728e36 （同步vs code的扩展设置）
+
+12. https://www.bilibili.com/video/av41371417?from=search&seid=16158597183720377757 (webpack视频讲解)
+                         

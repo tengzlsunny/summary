@@ -1,0 +1,328 @@
+import { isNull } from '@/libs/tools'
+/**
+ * [处理html格式问题]
+ * @author luke 2018-03-16
+ * @param  {[type]} vhtml [文本信息]
+ */
+export const formatHtml = _cont => {
+  let _content = _cont || ''
+  if (!_content) return ''
+  // 判断是不是html格式  匹配Html标签
+  var reg = new RegExp(/<("[^"]*"|[^'">])*>[^']*<\/[a-z]{1,6}>/)
+  if (!reg.test(_content)) {
+    _content = _content.replace(/\n/gm, '<br/>')
+    return '<p>' + _content + '</p>'
+  }
+  // html格式处理
+  /**
+   *  处理 css 样式
+   */
+  let styleArray = _content.match(/<style(([\s\S])*?)<\/style>/g)
+  if (!isNull(styleArray)) {
+    // 定义style的正则表达式
+    // let txtDemo = _content.match(/<style(([\s\S])*?)<\/style>/g)[0];
+    for (var i = 0; i < styleArray.length; i++) {
+      let txtDemo = styleArray[i]
+      let arrayList = txtDemo.split('\n')
+      for (let i = 1; i < arrayList.length - 1; i++) {
+        if (arrayList[i].trim() !== '') {
+          let tmp = arrayList[i].trimLeft()
+          // 处理邮件内容错误问题, 添加逗号样式 @luke 2018年05月03日
+          if (tmp.indexOf('{') > -1 || tmp.indexOf(',') > -1) {
+            let zindex = tmp.indexOf('{')
+            // 前面的文字
+            let front = tmp.substring(0, zindex)
+            let labelArray = front.split(',')
+            // 要处理的文字
+            let txtLabel = ''
+            for (let k = 0; k < labelArray.length; k++) {
+              txtLabel += '.webkit ' + labelArray[k] + ','
+            }
+            txtLabel = txtLabel.substring(0, txtLabel.length - 1)
+            // 拼接后面的字符
+            txtLabel = txtLabel + tmp.substring(zindex)
+            // 如果里面有media 标签那不用加
+            arrayList[i] = txtLabel
+          }
+        }
+      }
+      // 替换邮件
+      _content = _content.replace(txtDemo, arrayList.join(''))
+    }
+    // let txtDemo1 = _content.match(/<style(([\s\S])*?)<\/style>/g)[3];
+  }
+
+  /**
+   * 判断前后是否有标签包裹
+   */
+  let judge_cont = _content.trim()
+  let judge = /^</.test(judge_cont) && />$/.test(judge_cont)
+  if (!judge) _content = _content.replace(/\n/gm, '<br/>')
+
+  /**
+   * 去掉base标签
+   */
+  let baseArray = _content.match(/<base(([\s\S])*?)>/g)
+  if (!isNull(baseArray)) {
+    // 定义style的正则表达式
+    for (let i = 0; i < baseArray.length; i++) {
+      let _base = baseArray[i]
+      _content = _content.replace(_base, '')
+    }
+  }
+  // _content = _content.replace('http://', 'https://')
+  return _content
+}
+/**
+ * [formatHtmlContext html内容格式处理]
+ */
+export const formatHtmlContext = content => {
+  // 转换
+  if (undefined === content) {
+    return ''
+  }
+  // 优化邮箱格式 luke @2018年06月05日
+  // 去掉之前的p标签
+  content = content.replace(/<.p?>/gi, '')
+  let _content = content.replace(/(\r\n|\r|\n)/gm, '<br/>') // 换行
+  let txtTr = _content.split('<br/>')
+  let _html = ''
+  for (let i = 0; i < txtTr.length; i++) {
+    let tmpHtml = txtTr[i]
+    if (tmpHtml !== '') {
+      // 处理开头空格问题
+      tmpHtml = tmpHtml.replace(/(^\s)/gm, '&nbsp;')
+      tmpHtml = tmpHtml.replace(/( {3})/gm, '&nbsp; &nbsp;')
+      tmpHtml = tmpHtml.replace(/( {2})/gm, '&nbsp;&nbsp;')
+    } else {
+      tmpHtml = '<br/>'
+    }
+    // 解决火狐问题
+    _html +=
+      '<p style="-webkit-margin-before: 0em;-webkit-margin-after: 0em;margin: 0px;" >' +
+      tmpHtml +
+      '</p>'
+  }
+  // 小于2才进去格式化
+  if (txtTr.length < 2) {
+    _html = formatTemp(content)
+  }
+  return _html
+}
+/**
+ * [formatTemp 格式化模板]
+ * @author luke 2018-06-05
+ * @return {[type]} [description]
+ */
+function formatTemp (content) {
+  var txtTr = content.split('<br>')
+  let _html = ''
+  for (let i = 0; i < txtTr.length; i++) {
+    let tmpHtml = txtTr[i]
+    if (tmpHtml !== '') {
+      // /(^\s*)/gm
+      // 处理开头空格问题
+      tmpHtml = tmpHtml.replace(/(^\s)/gm, '&nbsp;')
+      tmpHtml = tmpHtml.replace(/( {3})/gm, '&nbsp; &nbsp;')
+      tmpHtml = tmpHtml.replace(/( {2})/gm, '&nbsp;&nbsp;')
+    } else {
+      tmpHtml = '<br/>'
+    }
+    // 解决火狐问题
+    _html += '<p style="margin: 0px;" >' + tmpHtml + '</p>'
+  }
+  return _html
+}
+
+/**
+ * [清除敏感词添加的自定义标签<sensitive></sensitive>]
+ * @author carry 2019-09-20
+ * @return 文本内容
+ */
+export const editorClean = _content => {
+  let cont = ''
+  cont = _content ? _content.replace(/(<sensitive>|<\/sensitive>)/gim, '') : ''
+  return cont
+}
+
+/**
+ * [敏感词添加的自定义标签<sensitive></sensitive>]
+ * @author carry 2019-09-22
+ * @return cont-文本内容 arr-敏感词数组
+ */
+export const addEditorSensitive = (cont, arr) => {
+  // 匹配html标签中间的内容
+  var patt1 = new RegExp('>(.*?)(?=<)', 'g')
+  var matchStrs = cont.match(patt1)
+  var words = []
+  // 替换>
+  for (var i = 0; i < matchStrs.length; i++) {
+    var matchStr = matchStrs[i].substring(1, matchStrs[i].length)
+    matchStr.replace(/&nbsp;/g, ' ')
+    matchStr = htmlCharacter(matchStr)
+    for (var j = 0; j < arr.length; j++) {
+      // 判断敏感词前后有空格或者是第一个或者是最后一个
+      let arrChara = specialCharacter(arr[j])
+      let strAll1 = `(\\s|&nbsp;)${arrChara}(\\s|&nbsp;)`
+      let strAll2 = `(\\s|&nbsp;)${arrChara}$`
+      let strAll3 = `^${arrChara}(\\s|&nbsp;|$)`
+      let strAll4 = `^${arrChara}$`
+      matchStr = matchStr.replace(
+        new RegExp(strAll1, 'g'),
+        ` <sensitive>${arr[j]}</sensitive> `
+      )
+      matchStr = matchStr.replace(
+        new RegExp(strAll2, 'g'),
+        ` <sensitive>${arr[j]}</sensitive>`
+      )
+      matchStr = matchStr.replace(
+        new RegExp(strAll3, 'g'),
+        `<sensitive>${arr[j]}</sensitive> `
+      )
+      matchStr = matchStr.replace(
+        new RegExp(strAll4, 'g'),
+        `<sensitive>${arr[j]}</sensitive>`
+      )
+    }
+    matchStr = htmlCharacterBack(matchStr)
+    words.push(matchStr)
+  }
+  // 将html中间的内容进行替换方便后面连接,如将<p>哈哈</p>替换成<p>%s</p>
+  var temp = cont.replace(patt1, '>%s')
+  // 将拆分出来的标签按顺序和替换敏感字后的中间内容进行连接
+  let arrTemp = temp.split('%s')
+  var finalStr = ''
+  for (let i = 0; i < arrTemp.length; i++) {
+    if (i === arrTemp.length - 1) {
+      finalStr += arrTemp[i]
+    } else {
+      finalStr += arrTemp[i] + words[i]
+    }
+  }
+  return finalStr
+}
+
+/**
+ * [判断是敏感词还是禁用词]
+ * @author carry 2019-09-22
+ * @return 文本内容
+ */
+export const judgeSensitive = (cont, arr) => {
+  // 判断是不是html格式  匹配Html标签
+  var reg = new RegExp(/<("[^"]*"|[^'">])*>[^']*<\/[a-z]{1,6}>/)
+  if (!reg.test(cont)) {
+    // 不是html格式的
+    let filterArr = filterSensitive(cont, arr)
+    for (let i in filterArr) {
+      filterArr[i] = htmlCharacterBack(filterArr[i])
+    }
+    return filterArr
+  }
+  // 匹配html标签中间的内容
+  var patt1 = new RegExp('>(.*?)(?=<)', 'g')
+  var matchStrs = cont.match(patt1)
+  // 替换>
+  let temp = []
+  for (var i = 0; i < matchStrs.length; i++) {
+    var matchStr = matchStrs[i].substring(1, matchStrs[i].length)
+    if (matchStr) {
+      matchStr = htmlCharacter(matchStr)
+      temp.push(...filterSensitive(matchStr, arr, 'val'))
+    }
+  }
+  // 数组去重
+  temp = Array.from(new Set(temp))
+  return temp
+}
+/**
+ * [筛选敏感词]
+ * @author carry 2019-09-22
+ * @return 返回敏感词数据 matchStr匹配的字符串
+ */
+function filterSensitive (cont, arr, val) {
+  let temp = []
+  for (var j = 0; j < arr.length; j++) {
+    let matchStr = cont
+    // 判断敏感词前后有空格或者是第一个或者是最后一个 不区分大小写
+    let arrChara = specialCharacter(arr[j])
+    let strAll = `(\\s|&nbsp;|^)${arrChara}(\\s|&nbsp;|$)`
+    if (new RegExp(strAll, 'gi').test(matchStr)) {
+      let matchArr = matchStr.match(new RegExp(arrChara, 'gi'))
+      if (matchArr && matchArr.length) temp.push(...matchArr)
+    }
+  }
+  temp = Array.from(new Set(temp))
+  return temp
+}
+/**
+ * [正则特殊字符转译]
+ * @author carry 2019-09-24
+ * @return 返回特殊字符转译之后的字符串
+ */
+function specialCharacter (str) {
+  let temp = str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+  return temp
+}
+
+/**
+ * [html大于小于转换]
+ * @author carry 2019-09-24
+ * @return html特殊字符转换
+ */
+function htmlCharacter (str) {
+  let temp = str.replace(/(&ensp;|&emsp;|&nbsp;)/g, ' ')
+  temp = temp.replace(/(&lt;)/g, '<')
+  temp = temp.replace(/(&gt;)/g, '>')
+  temp = temp.replace(/(&amp;)/g, '&')
+  return temp
+}
+
+/**
+ * [html大于小于转换回来]
+ * @author carry 2019-09-24
+ * @return html特殊字符转换回来
+ */
+function htmlCharacterBack (str) {
+  let temp = str
+  temp = temp.replace(/</g, '&lt;')
+  temp = temp.replace(/>/g, '&gt;')
+  // <sensitive></sensitive>标签转换
+  temp = temp.replace(/&lt;sensitive&gt;/g, '<sensitive>')
+  temp = temp.replace(/&lt;\/sensitive&gt;/g, '</sensitive>')
+  return temp
+}
+
+/**
+ * 数组去重，不区分大小写
+ */
+export const arrayFilter = arr => {
+  if (arr.length) {
+    let textArr = arr
+    let textObj = {}
+    for (let j in textArr) {
+      textArr[j] = htmlCharacterBack(textArr[j].trim())
+      let arrKey = Object.keys(textObj)
+      if (arrKey.length) {
+        for (let i in textObj) {
+          if (i !== textArr[j].toLowerCase()) {
+            textObj[textArr[j].toLowerCase()] = textArr[j]
+          }
+        }
+      } else {
+        textObj[textArr[j].toLowerCase()] = textArr[j]
+      }
+    }
+    let arrKey = Object.keys(textObj)
+    if (arrKey.length) {
+      textArr = []
+      for (let i in textObj) {
+        textArr.push(textObj[i])
+      }
+      return textArr
+    } else {
+      return []
+    }
+  } else {
+    return []
+  }
+}

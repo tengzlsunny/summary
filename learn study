@@ -2,5 +2,5 @@
 两个json对象差集
   let a1 = [{name: 1, value: 1}, {name: 2, value: 2}]
   let a2 = [1]
-  a3 = a1.filter(item => { return a2.indexOf(item.name)})
+  a3 = a1.filter(item => { return a2.indexOf(item.name) === -1})
   // a3 --- [{name: 2, value: 2}]

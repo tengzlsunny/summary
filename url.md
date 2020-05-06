@@ -30,4 +30,6 @@ webpack
 12. https://www.bilibili.com/video/av41371417?from=search&seid=16158597183720377757 (webpack视频讲解)
 
 13. https://www.tiny.cloud/ (tinyMCE 富文本编辑器)： demo：http://tinymce.ax-z.cn/demos/demo-classic.php
+
+14. https://jsplumbtoolkit.com/demonstration/flowchart-builder 文本图片拖拽
                          

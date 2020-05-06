@@ -4,3 +4,28 @@
   let a2 = [1]
   a3 = a1.filter(item => { return a2.indexOf(item.name) === -1})
   // a3 --- [{name: 2, value: 2}]
+ 
+
+Vue2公共自定义指令改变DOM值后未刷新data中绑定属性的值
+<el-input :maxlength="100" v-clearSpace="{set: this.searchForm, name: 'rmaId', value: searchForm.rmaId}" v-model="searchForm.rmaId"></el-input>
+
+clearSpace: {
+    update: function (el, binding, vnode) {
+      try {
+        if (!el.children[0].value) {
+          return false;
+        }
+        el.addEventListener('focusout', event => {
+          el.children[0].value = binding.value.value.replace(/(^\s*)|(\s*$)/g, '')
+          binding.value.set[binding.value.name] = el.children[0].value
+        })
+        // let newval = value.replace(/^\s/g, '');
+        let newval = el.children[0].value.replace(/^\s/g, '');
+        if (newval !== binding.value.value) {
+          el.children[0].value = newval
+          binding.value.set[binding.value.name] = newval
+        }
+      } catch (e) {
+      }
+    }
+  }

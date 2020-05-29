@@ -163,8 +163,6 @@ export default {
     },
     otherCheck (val, index) {
       this.$set(this.formInline.issueInfoList[index], 'module', val ? '1' : '')
-      // 清除某个的验证
-      this.$refs.formInline.resetFields('module')
     }
   }
 }

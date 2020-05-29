@@ -1,0 +1,300 @@
+// 表单数组遍历校验
+<template>
+  <div>
+    <modal-item ref="modalPublic">
+      <div slot="modalContent">
+        <Form class="add-issue-form set-scroll-style" :label-width="126" ref="formInline" :model="formInline" :rules="ruleInline">
+          <div class="issue-basic-information issue-information-public">
+            <p class="issue-basic-information_title">Basic Information</p>
+            <div class="issue-form-item">
+              <FormItem label="Model" prop="model">
+                <Input type="text" style="width: 250px;" v-model="formInline.model" placeholder="Username"></Input>
+              </FormItem>
+              <FormItem label="SKU" prop="sku">
+                <Select style="width: 250px;" v-model="formInline.sku">
+                  <Option value="beijing">New York</Option>
+                  <Option value="shanghai">London</Option>
+                  <Option value="shenzhen">Sydney</Option>
+                </Select>
+              </FormItem>
+              <FormItem label="Product Line" prop="line">
+                <Select style="width: 250px;" v-model="formInline.line">
+                  <Option value="beijing">New York</Option>
+                  <Option value="shanghai">London</Option>
+                  <Option value="shenzhen">Sydney</Option>
+                </Select>
+              </FormItem>
+              <FormItem label="S/N" prop="sku">
+                <Input type="text" style="width: 250px;" v-model="formInline.sn" placeholder="Username"></Input>
+              </FormItem>
+              <FormItem label="Country" prop="countryId">
+                <Select style="width: 250px;" v-model="formInline.countryId">
+                  <Option value="beijing">New York</Option>
+                  <Option value="shanghai">London</Option>
+                  <Option value="shenzhen">Sydney</Option>
+                </Select>
+              </FormItem>
+            </div>
+          </div>
+          <div class="issue-issue-information issue-information-public">
+            <p class="issue-basic-information_title">
+              Issue Information
+              <span @click="issueAddFn" v-if="formInline.issueInfoList.length < 5 && popType === 'Add'"> <i class="iconfont iconadd_nor"></i> Issue </span>
+            </p>
+            <div class="issue-form-item" v-for="(item, index) in formInline.issueInfoList" :key="index">
+              <div class="issue-form-item_flex1">
+                <FormItem label="Problem Module" :rules="ruleInline.module" :prop="`issueInfoList.${index}.module`">
+                  <Select style="width: 250px;" :transfer="true" v-if="!item.other" v-model="item.module">
+                    <Option value="beijing">New York</Option>
+                    <Option value="shanghai">London</Option>
+                    <Option value="shenzhen">Sydney</Option>
+                  </Select>
+                  <Checkbox v-model="item.other" @on-change="val => otherCheck(val, index)">Other</Checkbox>
+                </FormItem>
+                <span @click="issueDelFn(index)" v-if="formInline.issueInfoList.length > 1 && popType === 'Add'"> <i class="iconfont icondel_nor"></i> Delete
+                </span>
+              </div>
+              <div class="issue-form-item_flex1 issue-form-item_identification">
+                <i v-if="formInline.issueInfoList.length > 1">{{index + 1}}</i>
+                <FormItem label="Issue" :prop="`issueInfoList.${index}.issue`" :rules="ruleInline.issue" v-if="!item.other">
+                  <Input type="text" style="width: 645px" v-model="item.issue" placeholder="Username"></Input>
+                </FormItem>
+                <FormItem label="Remark" prop="remark" v-if="!!item.other" :rules="ruleInline.remark">
+                  <Input type="textarea" :maxlength="2000" v-model.trim="item.remark" :rows="5" :autosize="{minRows: 5,maxRows: 5}" style="width: 645px"
+                    placeholder="Username"></Input>
+                </FormItem>
+              </div>
+              <FormItem label="Main Category" :prop="`issueInfoList.${index}.mainCategoryId`" :rules="ruleInline.mainCategoryId" v-if="!item.other">
+                <Select style="width: 250px;" :transfer="true" v-model="item.mainCategoryId">
+                  <Option value="beijing">New York</Option>
+                  <Option value="shanghai">London</Option>
+                  <Option value="shenzhen">Sydney</Option>
+                </Select>
+              </FormItem>
+              <FormItem label="Party Responsible" :prop="`issueInfoList.${index}.partyResponsibleId`" :rules="ruleInline.partyResponsibleId" v-if="!item.other">
+                <Select style="width: 250px;" :transfer="true" v-model="item.partyResponsibleId">
+                  <Option value="beijing">New York</Option>
+                  <Option value="shanghai">London</Option>
+                  <Option value="shenzhen">Sydney</Option>
+                </Select>
+              </FormItem>
+            </div>
+          </div>
+        </Form>
+        <div class="model-flex_center">
+          <Button type="primary" size="large" :loading="loading" @click="ok">Confirm</Button>
+          <Button size="large" :loading="loading" @click="cancel">Cancel</Button>
+        </div>
+      </div>
+    </modal-item>
+  </div>
+</template>
+<script>
+import ModalPublic from '../../../components/modalPublic'
+import { mapGetters } from 'vuex' // 引用vuex
+export default {
+  components: { 'modal-item': ModalPublic },
+  computed: {
+    ...mapGetters({
+      getResize: 'getResize'
+    })
+  },
+  watch: {
+    getResize: {
+      handler () {
+        this.getFormMaxHeight()
+      },
+      immediate: true
+    }
+  },
+  data () {
+    return {
+      modal: false,
+      popType: '',
+      loading: false,
+      formInline: {
+        model: '',
+        sku: '',
+        line: '',
+        sn: '',
+        countryId: '',
+        issueInfoList: []
+      },
+      issueInfoListInit: {
+        module: '',
+        other: false,
+        issue: '',
+        mainCategoryId: '',
+        partyResponsibleId: '',
+        remark: ''
+      },
+      ruleInline: {
+        line: [{ required: true, message: 'Please select Product Line', trigger: 'change' }],
+        countryId: [{ required: true, message: 'Please select Country', trigger: 'change' }],
+        module: [{ required: true, message: 'Please select Problem Module' }],
+        issue: [{ required: true, message: 'Please input Issue', trigger: 'blur' }],
+        remark: [{ required: true, message: 'Please input Remark', trigger: 'blur' }],
+        mainCategoryId: [{ required: true, message: 'Please select Main Category', trigger: 'change' }],
+        partyResponsibleId: [{ required: true, message: 'Please select Party Responsible', trigger: 'change' }]
+      }
+    }
+  },
+  methods: {
+    // 获取form表单的最大高度
+    getFormMaxHeight () {
+      this.$nextTick(() => {
+        if (document.documentElement) {
+          let issueForm = document.querySelector('.add-issue-form')
+          let formMaxHeight = document.documentElement.clientHeight - 360 > 300 ? document.documentElement.clientHeight - 360 : 300
+          issueForm.style.cssText += 'max-height: ' + formMaxHeight + 'px;'
+        }
+      })
+    },
+    show (param) {
+      this.$refs.modalPublic.modal = true
+      this.$refs.modalPublic.title = param.title + ' Issue'
+      this.$refs.modalPublic.width = 820
+      this.popType = param.title
+      this.dataInit()
+      if (param.title === 'Add') {
+        this.formInline.issueInfoList.push(JSON.parse(JSON.stringify(this.issueInfoListInit)))
+      } else {
+      }
+    },
+    otherCheck (val, index) {
+      this.$set(this.formInline.issueInfoList[index], 'module', val ? '1' : '')
+      this.$refs.formInline.resetFields('module')
+    },
+    issueAddFn () {
+      this.formInline.issueInfoList.push(JSON.parse(JSON.stringify(this.issueInfoListInit)))
+    },
+    issueDelFn (index) {
+      this.formInline.issueInfoList.splice(index, 1)
+    },
+    ok () {
+      this.$refs['formInline'].validate(valid => {
+        if (valid) {
+          console.log(this.formInline, 'formInline')
+        }
+      })
+    },
+    cancel () {
+      this.dataInit()
+      this.$refs.modalPublic.modal = false
+    },
+    dataInit () {
+      this.formInline = {
+        model: '',
+        sku: '',
+        line: '',
+        sn: '',
+        countryId: '',
+        issueInfoList: []
+      }
+      this.$refs.formInline.resetFields()
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+@import '../../../libs/index';
+.add-issue-form {
+  overflow-y: auto;
+}
+.issue-information-public {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e7e7eb;
+  .issue-basic-information_title {
+    font-size: 12px;
+    color: #282828;
+    line-height: 14px;
+    margin-bottom: 16px;
+    span {
+      color: #1f79ff;
+      cursor: pointer;
+      i {
+        margin-right: 5px;
+        margin-left: 20px;
+        font-size: 15px;
+        position: relative;
+        top: 2px;
+      }
+    }
+  }
+  .issue-basic-information_title::before {
+    content: '';
+    display: inline-block;
+    margin-right: 6px;
+    width: 2px;
+    height: 12px;
+    position: relative;
+    top: 1px;
+    background: #1f79ff;
+  }
+  .issue-form-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e7e7eb;
+    > div {
+      width: 50%;
+      margin-bottom: 20px;
+    }
+    .issue-form-item_flex1 {
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0;
+      > div {
+        margin-bottom: 20px;
+      }
+      > span {
+        margin-bottom: 20px;
+        color: #ff6053;
+        margin-right: 20px;
+        cursor: pointer;
+        i {
+          margin-right: 5px;
+          margin-left: 20px;
+          font-size: 15px;
+          position: relative;
+          top: 2px;
+        }
+      }
+      .ivu-select {
+        margin-right: 20px;
+      }
+    }
+  }
+  .issue-form-item:last-of-type {
+    border-bottom: none;
+  }
+}
+.issue-information-public:last-of-type {
+  border-bottom: none;
+}
+.issue-form-item_identification {
+  position: relative;
+  > i {
+    position: absolute;
+    display: block;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: bold;
+    width: 22px;
+    height: 22px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    border: 1px solid #e7e9ec;
+    left: 0;
+    top: 5px;
+  }
+}
+</style>
+<style lang="less">
+</style>

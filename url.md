@@ -38,4 +38,6 @@ webpack
 16. https://juejin.im/post/5d4d0ec651882549594e7293 css开发技巧
 
 17. https://juejin.im/post/5efb4ca5f265da23016c5c80 简单的js
+
+18. https://juejin.im/post/5f0316ac5188252e8406dec0 vue基础知识
                          

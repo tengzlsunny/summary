@@ -40,4 +40,6 @@ webpack
 17. https://juejin.im/post/5efb4ca5f265da23016c5c80 简单的js
 
 18. https://juejin.im/post/5f0316ac5188252e8406dec0 vue基础知识
+
+19. https://juejin.im/post/5f179100f265da22e27a9833 vue的十个优化点
                          

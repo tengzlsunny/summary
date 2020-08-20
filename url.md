@@ -46,4 +46,6 @@ webpack
 20. https://juejin.im/post/5f12a11b6fb9a07e777eaca5 JS开发必须知道的41个技巧
 
 21： https://juejin.im/post/6850037277675454478 vue基础知识2
+
+22.https://www.jianshu.com/p/271cf5de4257 vue pdf预览
                          

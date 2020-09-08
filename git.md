@@ -1,4 +1,38 @@
 ## git常用语法
+  ur: https://juejin.im/post/6869519303864123399
+
+### 文档查询
+#### 展示git命令大纲
+  `git help`
+  `git --help`
+*****
+#### 展示git命令大纲全部列表
+  `git --help -a`
+*****
+#### 展示具体命令说明手册
+  `git help <xxx>`
+*****
+
+### 分支管理规范
+#### master分支
+  `主分支，用于部署生产环境的分支，确保稳定性`
+  `master分支一般由develop分支和hotfix分支合并，任何情况下都不能直接修改代码`
+*****
+#### test分支
+  `测试分支`
+*****
+#### develop分支
+  `开发分支`
+*****
+#### hotfix
+  `修复分支，处理线上紧急bug`
+*****
+
+### 差异比较
+
+
+
+
 
 #### 添加本地分支
   `git branch 分支名`
@@ -81,3 +115,5 @@
   `git remote set-url origin 新的仓库地址`
   `git push -f origin`
 *****
+
+https://juejin.im/post/6869519303864123399

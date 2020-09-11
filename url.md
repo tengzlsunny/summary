@@ -48,4 +48,6 @@ webpack
 21： https://juejin.im/post/6850037277675454478 vue基础知识2
 
 22.https://www.jianshu.com/p/271cf5de4257 vue pdf预览
+
+23.https://juejin.im/post/6866914148387651592 flex布局
                          

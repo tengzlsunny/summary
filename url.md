@@ -50,4 +50,6 @@ webpack
 22.https://www.jianshu.com/p/271cf5de4257 vue pdf预览
 
 23.https://juejin.im/post/6866914148387651592 flex布局
+
+24.https://github.com/liriliri/eruda/blob/master/doc/README_CN.md 移动端调试工具
                          

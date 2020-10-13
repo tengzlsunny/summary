@@ -54,4 +54,6 @@ webpack
 24.https://github.com/liriliri/eruda/blob/master/doc/README_CN.md 移动端调试工具
 
 25.https://juejin.im/post/6875152247714480136 前端js
+
+26.https://www.cnblogs.com/malong1992/p/11967092.html // 图片按序加载
                          

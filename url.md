@@ -56,4 +56,6 @@ webpack
 25.https://juejin.im/post/6875152247714480136 前端js
 
 26.https://www.cnblogs.com/malong1992/p/11967092.html // 图片按序加载
+
+27.https://www.cnblogs.com/SallyShan/p/13603221.html 缓存
                          

@@ -58,4 +58,6 @@ webpack
 26.https://www.cnblogs.com/malong1992/p/11967092.html // 图片按序加载
 
 27.https://www.cnblogs.com/SallyShan/p/13603221.html 缓存
+
+28. https://www.tiny.cloud/docs/ui-components/typesoftoolbarbuttons/#menubutton tinymce值得学习的页面
                          

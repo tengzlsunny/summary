@@ -64,4 +64,6 @@ webpack
 29. https://juejin.cn/post/6981083988286767117 一份 ElementUI 问题清单
 
 30. https://juejin.cn/post/6844903737161433102 wangEditor富文本编辑器添加格式刷
+31. 
+32. https://github.com/webjyh/MPreview js实现ppt，word预览功能
                          

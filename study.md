@@ -60,6 +60,7 @@ for(let i = 0; i < 5; i ++) {
 'test '.repeat(5);
 
 5.如何中断foreach循环: 用try catch
+
 try {
   arr.forEach((item, i) => {
   if(xxx) throw new Error('LoopInterrupt') // 满足条件，跳出循环
